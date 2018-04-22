@@ -32,9 +32,9 @@ getSVGColors('<svg...>')
 
 // Pass the `flat` option to get back a single array including
 // de-duped fills and strokes together
-getSVGColors('<svg...>', {flat: true})
+getSVGColors('<svg viewBox="0 0 553 96.5"><rect width="20" height="20" x="2" y="23" fill="rgb(0,128,128)" stroke="green" /></svg>', {flat: true})
 	.then( colors => { 
-		// => ['#FFFFFF', 'rgb(0,128,128)', '#F0F0F0']
+		// => ['rgb(0,128,128)', 'green']
 	 } )
 ```
 
