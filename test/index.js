@@ -54,6 +54,14 @@ describe( 'get-svg-colors', () => {
 			} );
 	} );
 
+	it ( 'extracts inline stylesheet styles', () => {
+		return getSVGColors( 'http://localhost:9876/base/fixtures/inline-stylesheet.svg' )
+			.then( colors => {
+				expect( colors.fills.map( rgb2hex ) ).to.include( '#1d9053' );
+				expect( colors.fills ).to.include( 'white' );
+			} );
+	} );
+
 	it( 'supports radial gradients', () => {
 		return getSVGColors( 'http://localhost:9876/base/fixtures/radial-gradient.svg' )
 			.then( colors => {

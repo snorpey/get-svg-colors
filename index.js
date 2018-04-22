@@ -4,7 +4,7 @@ const htmlCommentRegex = /<!--([\s\S]*?)-->/g;
 const svgNamespace =  'http://www.w3.org/2000/svg';
 
 // https://gist.github.com/olmokramer/82ccce673f86db7cda5e#gistcomment-2243862
-const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/i
+const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/ig
 
 // https://www.w3.org/TR/css-color-3/#svg-color
 const colornames = [
@@ -95,11 +95,15 @@ function isSVGStr ( str ) {
 }
 
 function isSVGEl ( el ) {
-	return el instanceof SVGElement
+	return el instanceof SVGElement;
 }
 
 function getEls ( selector, parentEl ) {
-	return Array.prototype.slice.call( parentEl.querySelectorAll( selector ) );
+	return toArray( parentEl.querySelectorAll( selector ) );
+}
+
+function toArray ( list ) {
+	return Array.prototype.slice.call( list );
 }
 
 function getSVGEl ( input, options ) {
@@ -118,6 +122,23 @@ function getSVGEl ( input, options ) {
 	}
 }
 
+function getColorsInCSSStr ( str, type ) {
+	// getting the value from style declarations,
+	// e.g: .my-selector { fill: green; }
+	const colors = str
+		.replace( /(\s|\n|\R|\r)/g, '' )
+		.split( /(\{|\}|\;)/ ) // split on { and }
+		.map( part => part.trim() ) // trim parts
+		.map( toLowerCase )
+		.filter( part => part && part.length ) // remove empty parts
+		.filter( part => part.indexOf( type ) === 0 ) // only parts that start with type
+		.map( part => part.split( ':' ).map( part => part.trim() ).filter( p => p !== type ) )
+		.reduce( ( results, parts ) => results.concat( parts ), [ ] )
+		.filter( color => colornames.indexOf( color ) !== -1 || colorRegex.test( color ) );
+	
+	return colors;
+}
+
 export default function getSVGColors ( input, options ) {
 	return getSVGEl( input, options )
 		.then( svgEl => {
@@ -131,13 +152,25 @@ export default function getSVGColors ( input, options ) {
 
 			// Find elements with a `stroke` attribute
 			const stops = getEls( '[stop-color]', svgEl )
-				.map(el => el.getAttribute( 'stop-color' ) );
+				.map( el => el.getAttribute( 'stop-color' ) );
 
-			getEls( '[style]', svgEl ).forEach( el => {
-				fills.push( el.style.fill );
-				strokes.push( el.style.stroke );
-				stops.push( el.style.stopColor );
-			} );
+			// Find elements with inline styles
+			getEls( '[style]', svgEl )
+				.forEach( el => {
+					fills.push( el.style.fill );
+					strokes.push( el.style.stroke );
+					stops.push( el.style.stopColor );
+				} );
+			
+			// find inline stylesheets
+			getEls( 'style', svgEl )
+				.forEach( styleEl => {
+					const styleStr = styleEl.textContent;
+
+					getColorsInCSSStr( styleStr, 'fill' ).forEach( c => fills.push( c ) );
+					getColorsInCSSStr( styleStr, 'stroke' ).forEach( c => strokes.push( c ) );
+					getColorsInCSSStr( styleStr, 'stop-color' ).forEach( c => stops.push( c ) );
+				} );
 
 			if ( options && options.flat ) {
 				return compact(

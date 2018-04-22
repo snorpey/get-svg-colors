@@ -14,7 +14,7 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 
 	var htmlCommentRegex = /<!--([\s\S]*?)-->/g;
 	var svgNamespace =  'http://www.w3.org/2000/svg';
-	var colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/i;
+	var colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/ig;
 	var colornames = [
 		'black','silver','gray','white','maroon','red','purple','fuchsia','green','lime',
 		'olive','yellow','navy','blue','teal','aqua','aliceblue','antiquewhite','aqua',
@@ -85,10 +85,13 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 		return regex.test( str.replace( htmlCommentRegex, '' ) );
 	}
 	function isSVGEl ( el ) {
-		return el instanceof SVGElement
+		return el instanceof SVGElement;
 	}
 	function getEls ( selector, parentEl ) {
-		return Array.prototype.slice.call( parentEl.querySelectorAll( selector ) );
+		return toArray( parentEl.querySelectorAll( selector ) );
+	}
+	function toArray ( list ) {
+		return Array.prototype.slice.call( list );
 	}
 	function getSVGEl ( input, options ) {
 		if( isSVGEl ( input ) ) {
@@ -105,6 +108,19 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 			}
 		}
 	}
+	function getColorsInCSSStr ( str, type ) {
+		var colors = str
+			.replace( /(\s|\n|\R|\r)/g, '' )
+			.split( /(\{|\}|\;)/ )
+			.map( function (part) { return part.trim(); } )
+			.map( toLowerCase )
+			.filter( function (part) { return part && part.length; } )
+			.filter( function (part) { return part.indexOf( type ) === 0; } )
+			.map( function (part) { return part.split( ':' ).map( function (part) { return part.trim(); } ).filter( function (p) { return p !== type; } ); } )
+			.reduce( function ( results, parts ) { return results.concat( parts ); }, [ ] )
+			.filter( function (color) { return colornames.indexOf( color ) !== -1 || colorRegex.test( color ); } );
+		return colors;
+	}
 	function getSVGColors ( input, options ) {
 		return getSVGEl( input, options )
 			.then( function (svgEl) {
@@ -113,12 +129,20 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 				var strokes = getEls( '[stroke]', svgEl )
 					.map( function (el) { return el.getAttribute( 'stroke'); } );
 				var stops = getEls( '[stop-color]', svgEl )
-					.map(function (el) { return el.getAttribute( 'stop-color' ); } );
-				getEls( '[style]', svgEl ).forEach( function (el) {
-					fills.push( el.style.fill );
-					strokes.push( el.style.stroke );
-					stops.push( el.style.stopColor );
-				} );
+					.map( function (el) { return el.getAttribute( 'stop-color' ); } );
+				getEls( '[style]', svgEl )
+					.forEach( function (el) {
+						fills.push( el.style.fill );
+						strokes.push( el.style.stroke );
+						stops.push( el.style.stopColor );
+					} );
+				getEls( 'style', svgEl )
+					.forEach( function (styleEl) {
+						var styleStr = styleEl.textContent;
+						getColorsInCSSStr( styleStr, 'fill' ).forEach( function (c) { return fills.push( c ); } );
+						getColorsInCSSStr( styleStr, 'stroke' ).forEach( function (c) { return strokes.push( c ); } );
+						getColorsInCSSStr( styleStr, 'stop-color' ).forEach( function (c) { return stops.push( c ); } );
+					} );
 				if ( options && options.flat ) {
 					return compact(
 						fills
