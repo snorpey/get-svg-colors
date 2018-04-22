@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/snorpey/get-svg-colors-browser.svg?branch=master)](https://travis-ci.org/snorpey/get-svg-colors-browser)
+
 # get-svg-colors
 
 Extract stroke and fill colors from SVG files. Designed for use in the browser, not in node. For use in node, see [colorjs/get-svg-colors](https://github.com/colorjs/get-svg-colors).
