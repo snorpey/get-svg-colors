@@ -1,6 +1,6 @@
 {
   "name": "get-svg-colors-browser",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Extract stroke and fill colors from SVG files",
   "repository": "https://github.com/snorpey/get-svg-colors-browser.git",
   "main": "dist/get-svg-colors.js",
