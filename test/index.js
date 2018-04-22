@@ -1,63 +1,74 @@
 /* globals describe, it */
 
-const fs = require('fs')
-const assert = require('assert')
-const getColors = require('..')
-const hexy = /^#[0-9a-f]{3,6}$/i
+const svgStr = '<svg viewBox="0 0 553 96.5"><rect width="20" height="20" x="2" y="23" fill="red" stroke="green" /></svg>';
 
-describe('get-svg-colors', function(){
+function rgb2hex ( str ) {
+	const rgb = str.match( /^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i );
+	
+	return ( rgb && rgb.length === 4 ) ? (
+		"#" +
+		( '0' + parseInt( rgb[1], 10 ).toString( 16 ) ).slice( -2 ) +
+		( '0' + parseInt( rgb[2], 10 ).toString( 16 ) ).slice( -2 ) +
+		( '0' + parseInt( rgb[3], 10 ).toString( 16 ) ).slice( -2 )
+	).toLowerCase() : str;
+}
 
-  it('is a function', function() {
-    assert.equal(typeof getColors, "function")
-  })
+describe( 'get-svg-colors', () => {
 
-  it('accepts a filepath and returns an object', function() {
-    var colors = getColors(__dirname + '/fixtures/australia.svg')
-    assert(Array.isArray(colors.fills))
-    assert(Array.isArray(colors.strokes))
-  })
+	it( 'is a function', () => {
+		expect( getSVGColors ).to.be.a( 'function' );
+	} );
 
-  it('accepts an SVG string as input', function() {
-    var colors = getColors(fs.readFileSync(__dirname + '/fixtures/australia.svg', 'utf8'))
-    assert(Array.isArray(colors.fills))
-    assert(colors.fills.length)
-    assert(Array.isArray(colors.strokes))
-    assert(colors.strokes.length)
-  })
+	it ( 'accepts a filepath and returns an object', () => {
+		return getSVGColors( 'http://localhost:9876/base/fixtures/australia.svg' )
+			.then( colors => {
+				expect( colors.fills ).to.be.an.instanceof( Array );
+				expect( colors.strokes ).to.be.an.instanceof( Array );
+			} );
+	} );
 
-  it('returns chroma-js color objects', function() {
-    var colors = getColors(__dirname + '/fixtures/australia.svg')
-    assert(colors.strokes[0].hex().match(hexy))
-    assert(colors.fills[0].hex().match(hexy))
-  })
+	it ( 'accepts an SVG string as input', () => {
+		return getSVGColors( svgStr )
+			.then( colors => {
+				expect( colors.fills ).to.be.an.instanceof( Array );
+				expect( colors.fills ).to.have.lengthOf( 1 );
+				expect( colors.strokes ).to.be.an.instanceof( Array );
+				expect( colors.strokes ).to.have.lengthOf( 1 );
+			} );
+	} );
 
-  it('accepts a `flat` option to return a single array include fill and stroke colors', function() {
-    var colors = getColors(__dirname + '/fixtures/australia.svg', {flat: true})
-    assert(Array.isArray(colors))
-    assert(colors.length)
-    assert(colors[0].hex().match(hexy))
-  })
+	it ( 'accepts a `flat` option to return a single array include fill and stroke colors', () => {
+		return getSVGColors('http://localhost:9876/base/fixtures/australia.svg', {flat: true})
+			.then( colors => {
+				expect( colors ).to.be.an.instanceof( Array );
+				expect( colors ).to.have.lengthOf( 9 );
+			} );
+	} );
 
-  it('extracts inline styles', function() {
-    var colors = getColors(__dirname + '/fixtures/inline-styles.svg')
-    var fills = colors.fills.map(color => color.hex())
-    var strokes = colors.strokes.map(color => color.hex())
-    var stops = colors.stops.map(color => color.hex())
-    assert(fills.indexOf('#ffcc00') > -1)
-    assert(strokes.indexOf('#803300') > -1)
-    assert(stops.indexOf('#000000') > -1)
-  })
+	it ( 'extracts inline styles', () => {
+		return getSVGColors( 'http://localhost:9876/base/fixtures/inline-styles.svg' )
+			.then( colors => {
+				expect( colors.fills.map( rgb2hex ) ).to.include( '#ffcc00' );
+				expect( colors.strokes.map( rgb2hex ) ).to.include( '#803300' );
+				expect( colors.stops.map( rgb2hex ) ).to.include( '#000000' );
+			} );
+	} );
 
-  it('supports radial gradients', function() {
-    var colors = getColors(__dirname + '/fixtures/radial-gradient.svg')
-    var stops = colors.stops.map(color => color.hex())
-    assert(stops.indexOf('#ffffff') > -1)
-    assert(stops.indexOf('#fce0e0') > -1)
+	it( 'supports radial gradients', () => {
+		return getSVGColors( 'http://localhost:9876/base/fixtures/radial-gradient.svg' )
+			.then( colors => {
+				expect( colors.fills.map( rgb2hex ) ).to.include( '#d65252' );
+				expect( colors.stops.map( rgb2hex ) ).to.include( '#ffffff' );
+				expect( colors.stops.map( rgb2hex ) ).to.include( '#fce0e0' );
+			} );
+	} );
 
-    var colors = getColors(__dirname + '/fixtures/radial-gradient.svg', {flat: true})
-    colors = colors.map(color => color.hex())
-    assert(colors.indexOf('#ffffff') > -1)
-    assert(colors.indexOf('#fce0e0') > -1)
-  })
-
-})
+	it( 'supports radial gradients with `flat` option', () => {
+		return getSVGColors( 'http://localhost:9876/base/fixtures/radial-gradient.svg', { flat: true } )
+			.then( colors => {
+				expect( colors.map( rgb2hex ) ).to.include( '#ffffff' );
+				expect( colors.map( rgb2hex ) ).to.include( '#d65252' );
+				expect( colors.map( rgb2hex ) ).to.include( '#fce0e0' );
+			} );
+	} );
+} )
