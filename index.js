@@ -4,7 +4,7 @@ const htmlCommentRegex = /<!--([\s\S]*?)-->/g;
 const svgNamespace =  'http://www.w3.org/2000/svg';
 
 // https://gist.github.com/olmokramer/82ccce673f86db7cda5e#gistcomment-2243862
-const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/ig
+const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/i
 
 // https://www.w3.org/TR/css-color-3/#svg-color
 const colornames = [

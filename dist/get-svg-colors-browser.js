@@ -1,5 +1,5 @@
 /* 
-get-svg-colors-browser v0.0.1
+get-svg-colors-browser v2.0.0
 Copyright (c) 2018 Georg Fischer
 @license MIT
 https://github.com/snorpey/get-svg-colors-browser.git */
@@ -14,7 +14,7 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 
 	var htmlCommentRegex = /<!--([\s\S]*?)-->/g;
 	var svgNamespace =  'http://www.w3.org/2000/svg';
-	var colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/ig;
+	var colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/i;
 	var colornames = [
 		'black','silver','gray','white','maroon','red','purple','fuchsia','green','lime',
 		'olive','yellow','navy','blue','teal','aqua','aliceblue','antiquewhite','aqua',
