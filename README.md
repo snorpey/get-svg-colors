@@ -2,6 +2,8 @@
 
 # get-svg-colors-browser
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/snorpey/get-svg-colors-browser.svg)](https://greenkeeper.io/)
+
 extract stroke and fill colors from SVG files. designed for use in the browser, not in node.
 
 for use in node, see [colorjs/get-svg-colors](https://github.com/colorjs/get-svg-colors).
