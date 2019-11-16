@@ -42,7 +42,9 @@ function createES6Bundle ( filePath ) {
 	const format = ( es5Build || bundleUMD ) ? 'umd' : 'es';
 
 	return processES6File( filePath, format, moduleName )
-		.then( processFileContent )
+		.then( fileContent => {
+			return processFileContent(fileContent)
+		} )
 		.then( fileContent => {
 			if ( licenseComments.length ) {
 				fileContent = licenseComments
@@ -89,9 +91,10 @@ function processES6File ( filePath, format = 'es', moduleName ) {
 				bundleOpts.name = moduleName;
 			}
 
-			return bundle.generate( bundleOpts )
+			return bundle
+				.generate( bundleOpts )
 				.then( bundleData => {
-					return bundleData.code;
+					return bundleData.output[0].code;
 				} );
 		}, err => {
 			console.log( err );

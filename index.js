@@ -124,14 +124,14 @@ function getSVGEl ( input, options ) {
 
 function getColorsInCSSStr ( str, type ) {
 	// getting the value from style declarations,
-	// e.g: .my-selector { fill: green; }
+	// e.g: .my-selector { fill: green; }
 	const colors = str
 		.replace( /(\s|\n|\R|\r)/g, '' )
 		.split( /(\{|\}|\;)/ ) // split on { and }
 		.map( part => part.trim() ) // trim parts
 		.map( toLowerCase )
 		.filter( part => part && part.length ) // remove empty parts
-		.filter( part => part.indexOf( type ) === 0 ) // only parts that start with type
+		.filter( part => part.indexOf( type ) === 0 ) // only parts that start with type
 		.map( part => part.split( ':' ).map( part => part.trim() ).filter( p => p !== type ) )
 		.reduce( ( results, parts ) => results.concat( parts ), [ ] )
 		.filter( color => colornames.indexOf( color ) !== -1 || colorRegex.test( color ) );

@@ -1,6 +1,6 @@
 /* 
-get-svg-colors-browser v2.0.0
-Copyright (c) 2018 Georg Fischer
+get-svg-colors-browser v2.0.1
+Copyright (c) 2019 Georg Fischer
 @license MIT
 https://github.com/snorpey/get-svg-colors-browser.git */
 
@@ -9,7 +9,7 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.getSVGColors = factory());
+	(global = global || self, global.getSVGColors = factory());
 }(this, (function () { 'use strict';
 
 	var htmlCommentRegex = /<!--([\s\S]*?)-->/g;
@@ -115,14 +115,14 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 			.map( function (part) { return part.trim(); } )
 			.map( toLowerCase )
 			.filter( function (part) { return part && part.length; } )
-			.filter( function (part) { return part.indexOf( type ) === 0; } )
+			.filter( function (part) { return part.indexOf( type ) === 0; } )
 			.map( function (part) { return part.split( ':' ).map( function (part) { return part.trim(); } ).filter( function (p) { return p !== type; } ); } )
 			.reduce( function ( results, parts ) { return results.concat( parts ); }, [ ] )
 			.filter( function (color) { return colornames.indexOf( color ) !== -1 || colorRegex.test( color ); } );
 		return colors;
 	}
 	function getSVGColors ( input, options ) {
-		return getSVGEl( input, options )
+		return getSVGEl( input)
 			.then( function (svgEl) {
 				var fills = getEls( '[fill]', svgEl )
 					.map( function (el) { return el.getAttribute( 'fill' ); } );
