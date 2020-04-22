@@ -1,6 +1,6 @@
 /* 
-get-svg-colors-browser v2.0.1
-Copyright (c) 2019 Georg Fischer
+get-svg-colors-browser v2.0.2
+Copyright (c) 2020 Georg Fischer
 @license MIT
 https://github.com/snorpey/get-svg-colors-browser.git */
 
