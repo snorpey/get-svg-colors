@@ -36,6 +36,6 @@
     "rollup-plugin-cleanup": "^2.0.1",
     "rollup-plugin-license": "^0.13.0",
     "uglify-es": "^3.3.9",
-    "uglify-js": "^3.9.1"
+    "uglify-js": "^3.9.3"
   }
 }
