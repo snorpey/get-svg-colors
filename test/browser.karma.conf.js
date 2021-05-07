@@ -21,7 +21,8 @@ module.exports = function ( config ) {
 			'./index.js',
 			{
 				pattern: './fixtures/*.svg',
-				included: true
+				included: true,
+				type: 'dom'
 			}
 		] ),
 		reporters: [ 'progress' ],

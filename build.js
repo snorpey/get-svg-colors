@@ -1,6 +1,6 @@
 const { readFile, writeFile } = require( 'fs' );
 const { rollup } = require( 'rollup' );
-const buble = require( 'rollup-plugin-buble' );
+const buble = require( '@rollup/plugin-buble' );
 const UglifyJS = require( 'uglify-js' );
 const UglifyES = require( 'uglify-es' );
 const cleanup = require( 'rollup-plugin-cleanup' );
@@ -94,7 +94,10 @@ function processES6File ( filePath, format = 'es', moduleName ) {
 			return bundle
 				.generate( bundleOpts )
 				.then( bundleData => {
-					return bundleData.code;
+					const code = Array.isArray( bundleData.output )
+						? bundleData.output[0].code
+						: bundleData.output.code;
+					return code;
 				} );
 		}, err => {
 			console.log( err );
@@ -102,7 +105,7 @@ function processES6File ( filePath, format = 'es', moduleName ) {
 }
 
 function processFileContent ( fileContent ) {
-	fileContent = extractLicenseComments ( fileContent )
+	fileContent = extractLicenseComments( fileContent )
 	
 	if ( minifyBuild ) {
 		return compressFileContent( fileContent );
