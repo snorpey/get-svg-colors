@@ -1,5 +1,5 @@
 /* 
-get-svg-colors-browser v2.0.3
+get-svg-colors-browser v2.0.5
 Copyright (c) 2021 Georg Fischer
 @license MIT
 https://github.com/snorpey/get-svg-colors-browser.git */
@@ -9,7 +9,7 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.getSVGColors = factory());
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.getSVGColors = factory());
 }(this, (function () { 'use strict';
 
 	var htmlCommentRegex = /<!--([\s\S]*?)-->/g;
@@ -122,7 +122,7 @@ https://github.com/snorpey/get-svg-colors-browser.git */
 		return colors;
 	}
 	function getSVGColors ( input, options ) {
-		return getSVGEl( input, options )
+		return getSVGEl( input)
 			.then( function (svgEl) {
 				var fills = getEls( '[fill]', svgEl )
 					.map( function (el) { return el.getAttribute( 'fill' ); } );

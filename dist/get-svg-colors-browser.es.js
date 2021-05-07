@@ -1,5 +1,5 @@
 /* 
-get-svg-colors-browser v2.0.3
+get-svg-colors-browser v2.0.5
 Copyright (c) 2021 Georg Fischer
 @license MIT
 https://github.com/snorpey/get-svg-colors-browser.git */
@@ -116,7 +116,7 @@ function getColorsInCSSStr ( str, type ) {
 	return colors;
 }
 function getSVGColors ( input, options ) {
-	return getSVGEl( input, options )
+	return getSVGEl( input)
 		.then( svgEl => {
 			const fills = getEls( '[fill]', svgEl )
 				.map( el => el.getAttribute( 'fill' ) );
